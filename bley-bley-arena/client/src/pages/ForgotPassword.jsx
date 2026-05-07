@@ -1,2 +1,0 @@
-import React,{useState}from'react';import{Auth}from'./Login';import{api}from'../services/api';
-export default function ForgotPassword(){const[email,setEmail]=useState(''),[msg,setMsg]=useState('');async function submit(e){e.preventDefault();const r=await api('/auth/forgot-password',{method:'POST',body:{email}});setMsg(r.message)}return <Auth title="Recuperar contraseña"><form onSubmit={submit}><input placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)}/><button>Enviar enlace</button>{msg&&<p className="ok">{msg}</p>}</form></Auth>}
