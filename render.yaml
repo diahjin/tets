@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: bley-bley-arena
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install && npx prisma generate && cd ../client && npm install && npm run build
+    startCommand: cd server && npx prisma migrate deploy && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bley-bley-arena-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: ""
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+
+databases:
+  - name: bley-bley-arena-db
+    plan: free
+    databaseName: bleybleyarena
+    user: bleybleyarena

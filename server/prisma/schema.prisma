@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BleyType {
+  ATAQUE
+  DEFENSA
+  RESISTENCIA
+  EQUILIBRIO
+}
+
+enum PieceCategory {
+  ENERGY_LAYER
+  FORGE_DISC
+  PERFORMANCE_TIP
+  CHIP_CORE
+  BLADE
+  RATCHET
+  BIT
+  OTHER
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  username      String   @unique
+  passwordHash  String
+  avatarUrl     String?
+  bio           String?
+  darkMode      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  bleys         Bley[]
+  combats       Combat[]
+  resetTokens   PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  tokenHash String
+  expiresAt DateTime
+  usedAt    DateTime?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Bley {
+  id             String   @id @default(uuid())
+  name           String
+  imageUrl       String?
+  type           BleyType
+  layer          String?
+  disc           String?
+  driver         String?
+  chipCore       String?
+  blade          String?
+  ratchet        String?
+  bit            String?
+  notes          String?
+  tags           String   @default("[]")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  combats        Combat[]
+}
+
+model Piece {
+  id            String        @id @default(uuid())
+  name          String
+  category      PieceCategory
+  type          BleyType?
+  weight        Float?
+  material      String?
+  advantages    String?
+  disadvantages String?
+  compatibility String?
+  description   String?
+  imageUrl      String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Combat {
+  id          String   @id @default(uuid())
+  bleyId      String
+  bley        Bley     @relation(fields: [bleyId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  result      String   // WIN | DRAW | LOSS
+  rival       String?
+  date        DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
+}
